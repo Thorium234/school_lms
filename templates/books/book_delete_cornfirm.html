@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Book List {% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <h2>Welcome {{ user.username }}</h2>
+{% else %}
+    <h4>You must be logged in to access this page.</h4>
+{% endif %}
+<div class="container mt-4">
+    <h2>Delete Book Confirmation</h2>
+    <p>Are you sure you want to delete the student: <strong>{{ book.title }}</strong>?</p>
+    <form action="{% url 'Book_delete' book.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        <a href="{% url 'Book_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %} 

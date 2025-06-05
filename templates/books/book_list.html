@@ -1,0 +1,48 @@
+{% extends 'base.html' %} 
+
+<p class="text-center mt-3">
+    {% if user.is_authenticated %}
+        <h2>Welcome {{ user.username }}</h2>
+    {% else %}
+        <h4>You must be logged in to access this page.</h4>
+    {% endif %}
+</p>
+
+ 
+{% block content %}
+    {% if user.is_authenticated %}
+        <p class="text-center "> AddBook <a href="{% url 'student_create' %}" class="btn-success">here </a>
+        <i class="fa-solid fa-user-plus"></i> </a>
+    {% endif %} 
+    {% if book %}
+        <table class="table table-striped mt-4 table-bordered">
+            <thead>
+                <tr>
+                    <th>TITLE</th>
+                    <th>PUBLISHER</th>
+                    <th>FIRST PUBLISHED</th>
+                    <th>ISBN NUMBER</th>
+                    <th>CATEGORY</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in book %}
+                    <tr>
+                        <td>{{ i.title }}</td>
+                        <td>{{ i.publishers }}</td>
+                        <td>{{ i.first_publication }}</td>
+                        <td>{{ i.ISBN }}</td>
+                        <td>{{ i.category }}</td>
+                        <td>
+                            <a href="{% url 'Book_edit' i.id %}"  class="btn btn-success">Edit</a>
+                            <a href="{% url 'Book_delete' i.id %}" class="btn btn-warning">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h4>there is no any book yet added</h4>
+    {% endif %}
+{% endblock %}

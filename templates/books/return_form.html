@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Return Book{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h3>Return Book</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <strong>Book:</strong> {{ borrow.book.title }}<br>
+                <strong>Borrowed by:</strong> {{ borrow.student }}<br>
+                <strong>Borrowed on:</strong> {{ borrow.borrowed_date|date:"M d, Y" }}<br>
+                <strong>Due on:</strong> {{ borrow.due_date|date:"M d, Y" }}
+                {% if borrow.is_overdue %}
+                    <span class="badge badge-danger ml-2">OVERDUE by {{ borrow.days_overdue }} days</span>
+                {% endif %}
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="confirmReturn" required>
+                        <label class="form-check-label" for="confirmReturn">
+                            I confirm that this book is being returned in good condition
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success mr-2">
+                        <i class="fas fa-check-circle"></i> Confirm Return
+                    </button>
+                    <a href="{% url 'borrow_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

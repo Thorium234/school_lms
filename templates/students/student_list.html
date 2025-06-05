@@ -1,0 +1,47 @@
+{% extends 'base.html' %} 
+{% block title %}  List {% endblock %}
+<p class="text-center mt-3">
+    {% if user.is_authenticated %}
+        <h2>Welcome {{ user.username }}</h2>
+    {% else %}
+        <h4>You must be logged in to access this page.</h4>
+    {% endif %}
+</p>
+
+ 
+{% block content %}
+    <p class="text-center"> AddStudent <a href="{% url 'student_create' %}" class="btn-success">here </a>
+        <i class="fa-solid fa-user-plus"></i> </a>
+    </p>   
+    {% if student %}
+        <table class="table table-striped mt-4 table-bordered">
+            <thead>
+                <tr>
+                    <th>FULL NAMES</th>
+                    <th>ADMISION NUMBER</th>
+                    <th>STREAM</th>
+                    
+                    
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in student %}
+                    <tr>
+                        <td>{{ i.first_name }} {{ i.last_name }}</td>
+                        
+                        <td>{{ i.admision_number }}</td>
+                        <td>{{ i.stream }}</td>
+        
+                        <td>
+                            <a href="{% url 'student_edit' i.id %}" class="btn btn-success">Edit</a>
+                            <a href="{% url 'student_delete' i.id %}" class="btn btn-warning">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h4>there is no any students yet added</h4>
+    {% endif %}
+{% endblock %}

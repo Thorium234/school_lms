@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+  {% if instance.id %}
+    {% block title %} Edit Bookl{% endblock %}
+  {% else %}
+     Add Book
+  {% endif %}
+{% block content %}
+    <div class="container mt-4 center" class="login-form" style="max-width: 400px; margin: auto;">
+        <h2>{% if instance.id %}Edit Book{% else %}Add Book{% endif %}</h2>
+        {% if instance.id %}
+        <p>Editing book: {{ instance.title }}</p>
+        {% else %}
+        <p>Add a new book to the system.</p>
+        {% endif %}
+        <form action="." method="post" autocomplete="off" class="form-horizontal" class="login-form" style="max-width: 400px; margin: auto;">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">{% if instance.id %}Update{% else %}Add{% endif %}</button>
+        </form>
+        <p class="text-center mt-3">
+        <a href="{% url 'Book_list' %}" class="btn btn-primary">View Books</a>
+        </p>
+    </div>
+ {% endblock %}

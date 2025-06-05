@@ -1,0 +1,324 @@
+{% extends 'base_auth.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Register - Library System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow border-0 mt-5">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show mb-4">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-2 fs-4"></i>
+                            <h5 class="mb-0">Registration Issues</h5>
+                        </div>
+                        <ul class="mb-0 ps-4 mt-2">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" id="registrationForm" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Username Field -->
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            {{ form.username }}
+                            <div class="invalid-feedback" id="usernameFeedback"></div>
+                        </div>
+                        <div class="form-text mb-3">
+                            <i class="fas fa-info-circle me-1"></i>Letters, numbers, and @/./+/-/_
+                        </div>
+                        
+                        <!-- Email Field -->
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            {{ form.email }}
+                            <div class="invalid-feedback" id="emailFeedback"></div>
+                        </div>
+                        
+                        <!-- Password Field -->
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            {{ form.password1 }}
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <div class="invalid-feedback" id="password1Feedback"></div>
+                        </div>
+                        
+                        <!-- Confirm Password Field -->
+                        <div class="input-group mb-4">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            {{ form.password2 }}
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <div class="invalid-feedback" id="password2Feedback"></div>
+                        </div>
+
+                        <!-- Password Requirements -->
+                        <div class="password-guide mb-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-key me-2"></i>
+                                <h6 class="mb-0">Password Requirements</h6>
+                            </div>
+                            <div class="row small">
+                                <div class="col-4 text-center">
+                                    <i id="lengthIcon" class="fas fa-ruler-vertical text-muted mb-1"></i>
+                                    <p class="mb-0">8+ chars</p>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <i id="commonIcon" class="fas fa-ban text-muted mb-1"></i>
+                                    <p class="mb-0">Not common</p>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <i id="numericIcon" class="fas fa-hashtag text-muted mb-1"></i>
+                                    <p class="mb-0">Not only numbers</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                            <i class="fas fa-user-plus me-2"></i>Register Now
+                        </button>
+                        
+                        <div class="text-center small">
+                            <p class="mb-1">By registering, you agree to our</p>
+                            <a href="#" class="text-muted">Terms of Service</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="mb-0">
+                        <i class="fas fa-sign-in-alt me-1"></i>
+                        Already have an account? 
+                        <a href="{% url 'login' %}" class="text-primary fw-bold">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .input-group-text {
+        width: 45px;
+        justify-content: center;
+        background-color: #f8f9fa;
+    }
+    .form-control {
+        height: calc(3rem + 2px);
+    }
+    .password-guide {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+    }
+    .password-guide i {
+        font-size: 1.2rem;
+    }
+    .form-text {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    .is-invalid {
+        border-color: #dc3545;
+    }
+    .valid-icon {
+        color: #28a745 !important;
+    }
+    .invalid-icon {
+        color: #dc3545 !important;
+    }
+    .toggle-password {
+        border-left: none;
+    }
+    .toggle-password:focus {
+        box-shadow: none;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registrationForm');
+    const usernameInput = document.getElementById('id_username');
+    const emailInput = document.getElementById('id_email');
+    const password1Input = document.getElementById('id_password1');
+    const password2Input = document.getElementById('id_password2');
+    
+    // Password requirement icons
+    const lengthIcon = document.getElementById('lengthIcon');
+    const commonIcon = document.getElementById('commonIcon');
+    const numericIcon = document.getElementById('numericIcon');
+    
+    // Common password list (simplified for demo)
+    const commonPasswords = ['password', '12345678', 'qwerty', 'letmein'];
+    
+    // Real-time validation
+    usernameInput.addEventListener('input', validateUsername);
+    emailInput.addEventListener('input', validateEmail);
+    password1Input.addEventListener('input', validatePassword);
+    password2Input.addEventListener('input', validatePasswordConfirm);
+    
+    // Password visibility toggle
+    document.querySelectorAll('.toggle-password').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            const input = this.parentElement.querySelector('input');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+    
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+        }
+    });
+    
+    function validateUsername() {
+        const username = usernameInput.value.trim();
+        const feedback = document.getElementById('usernameFeedback');
+        
+        if (username.length < 4) {
+            setInvalid(usernameInput, feedback, 'Username must be at least 4 characters');
+            return false;
+        }
+        
+        if (!/^[\w.@+-]+$/.test(username)) {
+            setInvalid(usernameInput, feedback, 'Contains invalid characters');
+            return false;
+        }
+        
+        setValid(usernameInput, feedback);
+        return true;
+    }
+    
+    function validateEmail() {
+        const email = emailInput.value.trim();
+        const feedback = document.getElementById('emailFeedback');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (!emailRegex.test(email)) {
+            setInvalid(emailInput, feedback, 'Please enter a valid email address');
+            return false;
+        }
+        
+        setValid(emailInput, feedback);
+        return true;
+    }
+    
+    function validatePassword() {
+        const password = password1Input.value;
+        const feedback = document.getElementById('password1Feedback');
+        let isValid = true;
+        
+        // Check length
+        if (password.length < 8) {
+            lengthIcon.classList.remove('valid-icon');
+            lengthIcon.classList.add('invalid-icon');
+            isValid = false;
+        } else {
+            lengthIcon.classList.remove('invalid-icon');
+            lengthIcon.classList.add('valid-icon');
+        }
+        
+        // Check if common
+        if (commonPasswords.includes(password.toLowerCase())) {
+            commonIcon.classList.remove('valid-icon');
+            commonIcon.classList.add('invalid-icon');
+            isValid = false;
+        } else {
+            commonIcon.classList.remove('invalid-icon');
+            commonIcon.classList.add('valid-icon');
+        }
+        
+        // Check if numeric only
+        if (/^\d+$/.test(password)) {
+            numericIcon.classList.remove('valid-icon');
+            numericIcon.classList.add('invalid-icon');
+            isValid = false;
+        } else {
+            numericIcon.classList.remove('invalid-icon');
+            numericIcon.classList.add('valid-icon');
+        }
+        
+        if (!isValid) {
+            setInvalid(password1Input, feedback, 'Password does not meet requirements');
+            return false;
+        }
+        
+        setValid(password1Input, feedback);
+        return true;
+    }
+    
+    function validatePasswordConfirm() {
+        const password1 = password1Input.value;
+        const password2 = password2Input.value;
+        const feedback = document.getElementById('password2Feedback');
+        
+        if (password1 !== password2) {
+            setInvalid(password2Input, feedback, 'Passwords do not match');
+            return false;
+        }
+        
+        setValid(password2Input, feedback);
+        return true;
+    }
+    
+    function validateForm() {
+        const isUsernameValid = validateUsername();
+        const isEmailValid = validateEmail();
+        const isPasswordValid = validatePassword();
+        const isPasswordConfirmValid = validatePasswordConfirm();
+        
+        return isUsernameValid && isEmailValid && isPasswordValid && isPasswordConfirmValid;
+    }
+    
+    function setInvalid(input, feedback, message) {
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+        feedback.textContent = message;
+    }
+    
+    function setValid(input, feedback) {
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        feedback.textContent = '';
+    }
+});
+</script>
+{% endblock %}
