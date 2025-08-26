@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Shelves{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="fw-bold">Shelves</h2>
+    <a href="{% url 'shelf_create' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Add Shelf
+    </a>
+  </div>
+
+  {% if shelves %}
+  <div class="row g-3">
+    {% for shelf in shelves %}
+    <div class="col-sm-12 col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ shelf.shelf_name }}</h5>
+          <p class="card-text small mb-1">Code: <strong>{{ shelf.shelf_code }}</strong></p>
+          <p class="card-text small mb-1">Category: 
+            {% if shelf.get_category_display %}
+              {{ shelf.get_category_display }}
+            {% else %}
+              {{ shelf.category }}
+            {% endif %}
+          </p>
+          <p class="card-text small mb-1">Books on Shelf: {{ shelf.books.count }}</p>
+          <p class="card-text small mb-3">Max per Student: {{ shelf.max_borrow_per_student }}</p>
+          <div class="mt-auto d-flex justify-content-between">
+            <a href="{% url 'shelf_edit' shelf.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+            <a href="{% url 'shelf_delete' shelf.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this shelf?');">Delete</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center shadow-sm mt-4">
+    No shelves have been added yet.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

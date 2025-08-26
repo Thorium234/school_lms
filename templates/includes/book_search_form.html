@@ -1,0 +1,28 @@
+<form method="get" class="row g-2 justify-content-center mb-4 position-relative" autocomplete="off" id="searchForm">
+    <div class="col-auto">
+        <input type="text" name="q" class="form-control" placeholder="Search books..." value="{{ request.GET.q|default:'' }}" id="searchInput" style="min-width:240px;">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-secondary">
+            <i class="fas fa-search"></i> Search
+        </button>
+    </div>
+    <div class="col-auto position-relative">
+        <a href="{{ request.path }}" class="btn btn-outline-secondary" id="clearBtn" style="display:none; font-size:1.3em;line-height:1;">&times;</a>
+    </div>
+</form>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var input = document.getElementById('searchInput');
+        var clearBtn = document.getElementById('clearBtn');
+        function toggleClear() {
+            if (input.value.trim() !== "") {
+                clearBtn.style.display = "inline-block";
+            } else {
+                clearBtn.style.display = "none";
+            }
+        }
+        input.addEventListener('input', toggleClear);
+        toggleClear();
+    });
+</script>

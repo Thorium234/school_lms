@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if edit_mode %}Edit Shelf{% else %}Add Shelf{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">{% if edit_mode %}Edit Shelf{% else %}Add Shelf{% endif %}</h2>
+    <form method="post" class="border p-4 shadow-sm rounded bg-light mb-3">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Save Shelf</button>
+            <a href="{% url 'shelf_list' %}" class="btn btn-secondary">Back to Shelves</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

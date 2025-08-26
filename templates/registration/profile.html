@@ -5,55 +5,98 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <h3 class="mb-0">
-                    <i class="fas fa-user-circle me-2"></i>User Profile
-                </h3>
-                <span class="badge bg-light text-dark">
-                    {% if user.is_staff %}
-                        <i class="fas fa-shield-alt"></i> Staff
-                    {% else %}
-                        <i class="fas fa-user"></i> Regular User
-                    {% endif %}
-                </span>
-            </div>
+    <!-- Dashboard Button -->
+    <div class="mb-3 text-end">
+        {% if profile.role == "student" %}
+            <a href="{% url 'student_dashboard' %}" class="btn btn-success">
+                <i class="fas fa-home"></i> Student Dashboard
+            </a>
+        {% else %}
+            <a href="{% url 'staff_dashboard' %}" class="btn btn-success">
+                <i class="fas fa-home"></i> Staff Dashboard
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="card shadow-lg border-0 mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="fas fa-user-circle me-2"></i> User Profile
+            </h4>
+            <span class="badge bg-light text-dark">
+                {% if profile.role == "super_admin" %}
+                    <i class="fas fa-crown"></i> Super Admin
+                {% elif profile.role == "admin" %}
+                    <i class="fas fa-user-shield"></i> Admin
+                {% elif profile.role == "staff" %}
+                    <i class="fas fa-chalkboard-teacher"></i> Staff
+                {% elif profile.role == "student" %}
+                    <i class="fas fa-user-graduate"></i> Student
+                {% else %}
+                    <i class="fas fa-user"></i> User
+                {% endif %}
+            </span>
         </div>
-        
+
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-4 text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-user fa-5x text-secondary"></i>
+            <div class="row g-4">
+                <!-- Profile Info -->
+                <div class="col-12 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100 text-center">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <i class="fas fa-user fa-5x text-secondary"></i>
+                            </div>
+                            <h5 class="card-title">{{ user.username }}</h5>
+                            <p class="text-muted">{{ user.email }}</p>
+                            <p class="text-muted">Phone: {{ profile.phone|default:"Not set" }}</p>
+                            {% if profile.admission_number %}
+                                <p class="text-muted">Admission No: {{ profile.admission_number }}</p>
+                            {% endif %}
+                            <p class="text-muted">Joined: {{ user.date_joined|date:"F d, Y" }}</p>
+                            <div class="d-grid gap-2 mt-3">
+                                <a href="{% url 'password_change' %}" class="btn btn-outline-info">
+                                    <i class="fas fa-key"></i> Change Password
+                                </a>
+                                <a href="{% url 'logout' %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <h4>{{ user.username }}</h4>
-                    <p class="text-muted">{{ user.email }}</p>
-                    <p class="text-muted">Joined: {{ user.date_joined|date:"F d, Y" }}</p>
-                    <a href="{% url 'password_reset' %}" class="btn btn-outline-info mt-2">
-                        <i class="fas fa-key"></i> Change Password
-                    </a>
-                    <a href="{% url 'logout' %}" class="btn btn-outline-danger mt-2">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </a>
                 </div>
-                
-                <div class="col-md-8">
-                    <h4 class="mb-4"><i class="fas fa-user-edit me-2"></i>Edit Profile</h4>
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form|crispy }}
-                        <button type="submit" class="btn btn-primary mt-3">
-                            <i class="fas fa-save me-2"></i>Save Changes
-                        </button>
-                    </form>
+
+                <!-- Edit Profile Form -->
+                <div class="col-12 col-lg-8">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">
+                                <i class="fas fa-user-edit me-2"></i> Edit Profile
+                            </h5>
+                            <form method="post" autocomplete="off">
+                                {% csrf_token %}
+                                {{ user_form|crispy }}
+                                {{ profile_form|crispy }}
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary mt-3">
+                                        <i class="fas fa-save me-1"></i> Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="card-footer text-muted text-center">
             Last login: {{ user.last_login|date:"F d, Y H:i" }}
         </div>
+    </div>
+
+    <div class="alert alert-info text-center" role="alert">
+        <i class="fas fa-info-circle me-2"></i>
+        Please keep your profile information up to date. This helps us serve you better!
     </div>
 </div>
 {% endblock %}

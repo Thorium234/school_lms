@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="fas fa-user-graduate"></i> Student Dashboard</h2>
+            <a href="{% url 'profile_user' %}" class="btn btn-outline-primary">
+                <i class="fas fa-user"></i> View Profile
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Student Info Card -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-id-card"></i> Student Info
+                </div>
+                <div class="card-body">
+                    <h4>{{ request.user.first_name }} {{ request.user.last_name }}</h4>
+                    <p><strong>Username:</strong> {{ request.user.username }}</p>
+                    <p><strong>Email:</strong> {{ request.user.email }}</p>
+                    <p><strong>Admission No:</strong> {{ request.user.profile.admission_number|default:"-" }}</p>
+                    <p><strong>Phone:</strong> {{ request.user.profile.phone|default:"-" }}</p>
+                    <p><strong>Joined:</strong> {{ request.user.date_joined|date:"F d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Quick Actions -->
+        <div class="col-md-8 mb-3">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-bolt"></i> Quick Actions
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'profile_user' %}" class="btn btn-outline-primary mb-2">
+                        <i class="fas fa-user"></i> Edit Profile
+                    </a>
+                    <a href="{% url 'password_change' %}" class="btn btn-outline-info mb-2">
+                        <i class="fas fa-key"></i> Change Password
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger mb-2">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+            <!-- Example: Borrowed Books Table -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-book"></i> My Borrowed Books
+                </div>
+                <div class="card-body">
+                    {% if borrowed_books %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Author</th>
+                                        <th>Borrowed On</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for book in borrowed_books %}
+                                    <tr>
+                                        <td>{{ book.title }}</td>
+                                        <td>{{ book.author }}</td>
+                                        <td>{{ book.borrowed_on|date:"M d, Y" }}</td>
+                                        <td>{{ book.due_date|date:"M d, Y" }}</td>
+                                        <td>
+                                            {% if book.is_overdue %}
+                                                <span class="badge bg-danger">Overdue</span>
+                                            {% else %}
+                                                <span class="badge bg-success">On Time</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No borrowed books at the moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bottom section: Notices or Academic Info -->
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-info-circle"></i> Notices & Updates
+                </div>
+                <div class="card-body">
+                    {% if notices %}
+                        <ul>
+                            {% for notice in notices %}
+                                <li><strong>{{ notice.title }}</strong>: {{ notice.content }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No new notices.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

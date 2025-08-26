@@ -2,29 +2,53 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # Dashboard
     path('', views.dashboard, name='dashboard'),
-    path('profile/', views.profile_user, name='profile_user'),
 
-    # URLs for books
+    # Room Dashboards & Drilldown
+    path('rooms/<int:room_id>/dashboard/', views.room_dashboard, name='room_dashboard'),
+    path('forms/<str:form_name>/rooms/', views.form_rooms, name='form_rooms'),
 
-    path('books/', views.Book_list, name='Book_list'),
-    path('books/create/', views.Book_create, name='Book_create'),
-    path('books/edit/<int:pk>/', views.Book_edit, name='Book_edit'),
-    path('books/delete/<int:pk>/', views.Book_delete, name='Book_delete'),
+    # Books
+    path('books/available/', views.book_available_list, name='book_available'),
 
-    #urls for students
+    path('books/', views.book_list, name='book_list'),
+    path('books/create/', views.book_create, name='book_create'),
+    path('books/<int:pk>/', views.book_detail, name='book_detail'),
+    path('books/edit/<int:pk>/', views.book_edit, name='book_edit'),
+    path('books/delete/<int:pk>/', views.book_delete, name='book_delete'),
+    path('books/borrow/<int:pk>/', views.book_borrow_from_detail, name='book_borrow_from_detail'),
+
+    # Shelves
+    path('shelves/', views.shelf_list, name='shelf_list'),
+    path('shelves/add/', views.shelf_create, name='shelf_create'),
+    path('shelves/edit/<int:pk>/', views.shelf_edit, name='shelf_edit'),
+    path('shelves/delete/<int:pk>/', views.shelf_delete, name='shelf_delete'),
+
+    # Rooms
+    path('rooms/', views.room_list, name='room_list'),
+    path('rooms/create/', views.room_create, name='room_create'),
+    path('rooms/edit/<int:pk>/', views.room_edit, name='room_edit'),
+    path('rooms/delete/<int:pk>/', views.room_delete, name='room_delete'),
+
+    # Revision Papers
+    path('revision-papers/', views.revision_papers_list, name='revision_papers_list'),
+    path('revision-papers/upload/', views.revision_paper_upload, name='revision_paper_upload'),
+
+    # Students
     path('students/', views.student_list, name='student_list'),
     path('students/create/', views.student_create, name='student_create'),
     path('students/edit/<int:pk>/', views.student_edit, name='student_edit'),
     path('students/delete/<int:pk>/', views.student_delete, name='student_delete'),
-    path('students/<int:student_id>/borrows/', views.student_borrows, name='student_borrows'),
+    path('students/<int:pk>/', views.student_detail, name='student_detail'),
+    path('students/assign-book/<int:pk>/', views.student_assign_book, name='student_assign_book'),
 
-    # Borrow/Return
-    path('borrow/', views.borrow_book, name='borrow_book'),
-    path('borrow/list/', views.borrow_list, name='borrow_list'),
-    path('return/<int:pk>/', views.return_book, name='return_book'),
-    path('books/<int:book_id>/borrows/', views.book_borrows, name='book_borrows'),
+    # Borrows
+    path('borrows/', views.borrow_list, name='borrow_list'),
+    path('borrows/create/', views.borrow_book, name='borrow_book'),
+    path('borrows/return/<int:pk>/', views.borrow_return, name='return_book'),
+    path('borrows/<int:pk>/abort/', views.abort_borrow, name='abort_borrow'),
 
-    
+    # Analytics
+    path('analysis/', views.analysis, name='analysis'),
 ]
-

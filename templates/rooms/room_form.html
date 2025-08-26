@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}{% if edit_mode %}Edit Room{% else %}Add Room{% endif %}{% endblock %}
+{% block content %}
+<div class="container mt-4" style="max-width: 420px;">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="mb-3">{% if edit_mode %}Edit Room{% else %}Add Room{% endif %}</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-success w-50">{% if edit_mode %}Update{% else %}Add{% endif %}</button>
+                    <a href="{% url 'room_list' %}" class="btn btn-secondary w-50">Back to Rooms</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

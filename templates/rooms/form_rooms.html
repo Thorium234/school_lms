@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}{{ form_name }} Rooms{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">{{ form_name }} - All Streams</h2>
+    <a href="{% url 'room_create' %}" class="btn btn-primary mb-3">Add Room ({{ form_name }})</a>
+    <table class="table table-bordered table-striped">
+        <thead class="table-info">
+            <tr>
+                <th>Form</th>
+                <th>Stream</th>
+                <th>Class Teacher</th>
+                <th>Total Students</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for room in rooms %}
+            <tr>
+                <td>{{ room.form }}</td>
+                <td>{{ room.stream }}</td>
+                <td>{{ room.class_teacher }}</td>
+                <td>{{ room.total_students }}</td>
+                <td>
+                    <a href="{% url 'room_dashboard' room.id %}" class="btn btn-info btn-sm">Dashboard</a>
+                    <a href="{% url 'room_edit' room.id %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'room_delete' room.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No rooms for {{ form_name }}.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'dashboard' %}" class="btn btn-link mt-3"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+</div>
+{% endblock %}

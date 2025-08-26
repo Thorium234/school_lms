@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Delete Room{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width: 420px;">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="mb-3">Confirm Delete</h2>
+            <p>Are you sure you want to delete <strong>{{ room.form }} {{ room.stream }}</strong>?</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a href="{% url 'room_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,34 +1,29 @@
 {% extends 'base.html' %}
-
-
 {% load crispy_forms_tags %}
-  {% if instance.id %}
-    {% block title %} Edit Student{% endblock %}
-  {% else %}
-     Add Student
-  {% endif %}
+
+{% block title %}
+    {% if instance.id %}Edit Student{% else %}Add Student{% endif %}
+{% endblock %}
+
 {% block content %}
-    
-    {% if user.is_authenticated %}
-    <div class="container mt-4 center" class="login-form" style="max-width: 400px; margin: auto;">
-        <h2>{% if instance.id %}Edit Student{% else %}Add Student{% endif %}</h2>
-        {% if instance.id %}
-            <p>Editing student: {{ instance.first_name }} {{ instance.last_name }}</p>
-        {% else %}
-            <p>Add a new student to the system.</p>
-        {% endif %}
-        <form action="." method="post" autocomplete="off" class="form-horizontal" class="login-form" style="max-width: 400px; margin: auto;">
-        <!-- Use the crispy form tag to render the form -->
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button type="submit" class="btn btn-success">{% if instance.id %}Update{% else %}Add{% endif %}</button>
-        </form>
-        <p class="text-center mt-3">
-            <a href="{% url 'student_list' %}" class="btn btn-primary">View Students</a>
-        </p>
-
-
+<div class="container mt-5" style="max-width: 480px;">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="mb-3">{% if instance.id %}Edit Student{% else %}Add Student{% endif %}</h2>
+            {% if instance.id %}
+                <p class="text-muted small mb-3">Editing student: <strong>{{ instance.first_name }} {{ instance.last_name }}</strong></p>
+            {% else %}
+                <p class="text-muted small mb-3">Add a new student to the system.</p>
+            {% endif %}
+            <form method="post" autocomplete="off" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-success w-50">{% if instance.id %}Update{% else %}Add{% endif %}</button>
+                    <a href="{% url 'student_list' %}" class="btn btn-secondary w-50">Back to Students</a>
+                </div>
+            </form>
+        </div>
     </div>
-    
-    {% endif %}
+</div>
 {% endblock %}

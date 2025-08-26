@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load library_extras %}
+{% load static %}
+{% block title %}{{ room.form }} {{ room.stream }} Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="fw-bold mb-4 text-primary text-center text-md-start">
+    {{ room.form }} {{ room.stream }} Room Dashboard
+  </h2>
+
+  {% if students %}
+    <div class="row g-4">
+      {% for student in students %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ student.first_name }} {{ student.last_name }}
+              <small class="text-muted d-block">Admission No: {{ student.admission_number }}</small>
+            </h5>
+            <p class="card-text mb-1">
+              <strong>Active Borrows:</strong> {{ student_borrows|get_item:student.id|length }}
+            </p>
+
+            {% if student_borrows|get_item:student.id %}
+              <div class="mb-2">
+                <strong>Books:</strong>
+                <ul class="list-unstyled small mb-0">
+                  {% for borrow in student_borrows|get_item:student.id %}
+                  <li class="mb-1">
+                    <i class="fas fa-book text-primary me-1"></i>
+                    {{ borrow.book.title }}
+                    <br>
+                    <span class="text-muted">
+                      No: {{ borrow.book.book_number }}, ISBN: {{ borrow.book.ISBN }}
+                    </span>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+              <div class="mb-2">
+                <strong>Due Dates:</strong>
+                <ul class="list-unstyled small mb-0">
+                  {% for borrow in student_borrows|get_item:student.id %}
+                  <li>
+                    <i class="fas fa-calendar-alt text-secondary me-1"></i>
+                    {{ borrow.due_date|date:"M d, Y" }}
+                    {% if borrow.is_overdue %}
+                      <span class="badge bg-danger ms-1">Overdue</span>
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% else %}
+              <p class="text-success mb-2">No active borrows</p>
+            {% endif %}
+
+            <p class="mt-2">
+              {% if student_borrows|get_item:student.id %}
+                <span class="badge bg-warning text-dark">Has books</span>
+              {% else %}
+                <span class="badge bg-success">All returned</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center mt-4">
+      No students in this room.
+    </div>
+  {% endif %}
+
+  <div class="mt-4">
+    <a href="{% url 'room_list' %}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Rooms
+    </a>
+  </div>
+</div>
+{% endblock %}

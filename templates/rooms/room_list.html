@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Rooms{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <h2 class="mb-0">Rooms (Form / Stream / Class)</h2>
+    <a href="{% url 'room_create' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Add Room
+    </a>
+  </div>
+
+  {% if rooms %}
+  <div class="row g-4">
+    {% for room in rooms %}
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <h5 class="card-title mb-2">Form {{ room.form }} - {{ room.stream }}</h5>
+            <p class="mb-1"><strong>Class Teacher:</strong> {{ room.class_teacher }}</p>
+            <p class="mb-3">
+              <strong>Total Students:</strong>
+              {% if room.total_students is not None %}
+                {{ room.total_students }}
+              {% else %}
+                {{ room.students.count }}
+              {% endif %}
+            </p>
+          </div>
+          <div class="d-grid gap-2">
+            <a href="{% url 'room_dashboard' room.id %}" class="btn btn-info btn-sm">
+              <i class="fas fa-chart-bar"></i> Dashboard
+            </a>
+            <a href="{% url 'room_edit' room.id %}" class="btn btn-warning btn-sm">
+              <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'room_delete' room.id %}" class="btn btn-danger btn-sm">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center mt-4">
+    No rooms available.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

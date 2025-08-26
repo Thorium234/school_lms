@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% block title %}Library Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar with Student, Book, and Other Actions -->
+    <div class="col-md-3 mb-4">
+        <div class="card shadow-sm sticky-top" style="top: 1.5rem;">
+            <div class="card-header bg-primary text-white fw-bold">
+                <i class="fas fa-bars"></i> Quick Actions
+            </div>
+            <div class="card-body p-2">
+                <h6 class="fw-bold mb-2">Students</h6>
+                <div class="d-grid gap-2 mb-3">
+                    <a href="{% url 'student_list' %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-users"></i> View Students
+                    </a>
+                    <a href="{% url 'student_create' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-user-plus"></i> Add Student
+                    </a>
+                </div>
+                <h6 class="fw-bold mb-2">Books</h6>
+                <div class="d-grid gap-2 mb-3">
+                    <a href="{% url 'book_list' %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-book"></i> View All Books
+                    </a>
+                    <a href="{% url 'book_available' %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-check-circle"></i> Available Books
+                    </a>
+                    <a href="{% url 'book_create' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-plus"></i> Add Book
+                    </a>
+                </div>
+
+                <h6 class="fw-bold mb-2">Other</h6>
+                <div class="d-grid gap-2 mb-3">
+                    <a href="{% url 'shelf_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-archive"></i> Manage Shelves
+                    </a>
+                    <a href="{% url 'room_list' %}" class="btn btn-outline-dark btn-sm">
+                        <i class="fas fa-door-open"></i> Manage Rooms
+                    </a>
+                    <a href="{% url 'analysis' %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-chart-pie"></i> Analysis
+                    </a>
+                </div>
+                <hr>
+                <a href="{% url 'borrow_book' %}" class="btn btn-outline-warning btn-sm w-100 mt-2">
+                    <i class="fas fa-book-reader"></i> Borrow Book
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Main dashboard content -->
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
+            <h1 class="display-5 fw-bold text-primary">Library Dashboard</h1>
+            <div>
+                <span class="badge bg-primary me-2">Books: {{ total_books }}</span>
+                <span class="badge bg-success me-2">Students: {{ total_students }}</span>
+                <span class="badge bg-danger">Overdue: {{ overdue_borrows }}</span>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary"><i class="fas fa-book fa-fw"></i> Total Books</h5>
+                        <p class="card-text display-4 text-center">{{ total_books }}</p>
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-primary w-100 mt-2">View Books</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-success"><i class="fas fa-users fa-fw"></i> Registered Students</h5>
+                        <p class="card-text display-4 text-center">{{ total_students }}</p>
+                        <a href="{% url 'student_list' %}" class="btn btn-outline-success w-100 mt-2">View Students</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger"><i class="fas fa-exclamation-circle fa-fw"></i> Overdue Books</h5>
+                        <p class="card-text display-4 text-center">{{ overdue_borrows }}</p>
+                        <a href="{% url 'borrow_list' %}" class="btn btn-outline-danger w-100 mt-2">View Borrows</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="row mb-4">
+            <div class="col-lg-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fas fa-arrow-trend-up"></i> Most Active Room
+                    </div>
+                    <div class="card-body">
+                        {% if room_stats %}
+                            {% with top_room=room_stats|dictsortreversed:"student_count"|first %}
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-door-open fa-2x text-primary me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">{{ top_room.form }} {{ top_room.stream }}</h5>
+                                    <span class="badge bg-primary">{{ top_room.student_count }} Students</span>
+                                    <div class="small text-muted mt-1">Class Teacher: {{ top_room.class_teacher }}</div>
+                                    <a href="{% url 'room_dashboard' top_room.id %}" class="btn btn-outline-info btn-sm mt-2">View Room Dashboard</a>
+                                </div>
+                            </div>
+                            {% endwith %}
+                        {% else %}
+                            <span class="text-muted">No room data available.</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fas fa-clock"></i> Latest Book Added
+                    </div>
+                    <div class="card-body">
+                        {% if latest_book %}
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-book fa-2x text-success me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">{{ latest_book.title }}</h5>
+                                    <span class="badge bg-success">By {{ latest_book.publishers }}</span>
+                                    <div class="small text-muted mt-1">ISBN: {{ latest_book.ISBN }}</div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <span class="text-muted">No books added yet.</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fas fa-fire"></i> Most Borrowed Book
+                    </div>
+                    <div class="card-body">
+                        {% if most_borrowed_book %}
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-book-reader fa-2x text-warning me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">{{ most_borrowed_book.book__title }}</h5>
+                                    <span class="badge bg-warning text-dark">{{ most_borrowed_book.borrow_count }} times</span>
+                                    <div class="small text-muted mt-1">Last borrowed: {{ most_borrowed_book.book__created|date:"M d, Y" }}</div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <span class="text-muted">No borrow data yet.</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grouped By Form (Drill-down) -->
+        <div class="card border-info mb-4 shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-layer-group"></i> Classes Grouped by Form</h5>
+            </div>
+            <div class="card-body p-2">
+                <ul class="list-group list-group-flush">
+                    {% for form in forms_list %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold fs-5">{{ form.form }}</span>
+                                <span class="badge bg-primary ms-2">{{ form.total_students }} Students</span>
+                                <span class="badge bg-warning text-dark ms-2">{{ form.total_borrows }} Books Borrowed</span>
+                            </div>
+                            <a href="{% url 'form_rooms' form.form %}" class="btn btn-outline-info btn-sm ms-3">
+                                <i class="fas fa-door-open"></i> View Rooms
+                            </a>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-center text-muted">No forms found.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Grouped By Stream (Chart and Stats) -->
+        <div class="card border-warning mb-4 shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-layer-group"></i> Students & Borrows by Stream</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="studentsStreamBarChart" class="mb-3"></canvas>
+                <ul class="list-group list-group-flush">
+                    {% for stream in streams_list %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">{{ stream.stream }}</span>
+                            <span>
+                                <span class="badge bg-primary me-2">{{ stream.total_students }} Students</span>
+                                <span class="badge bg-info text-dark">{{ stream.total_borrows }} Borrowed</span>
+                            </span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-center text-muted">No streams found.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Graphs for Students per Room and Borrows per Room -->
+        <div class="row mb-4">
+            <div class="col-xl-4 col-lg-12 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fas fa-chart-bar me-2"></i> Students per Room (Bar Graph)
+                    </div>
+                    <div class="card-body">
+                        <canvas id="roomBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-12 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fas fa-chart-line me-2"></i> Students per Room (Line Graph)
+                    </div>
+                    <div class="card-body">
+                        <canvas id="roomLineChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-12 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white fw-bold">
+                        <i class="fas fa-chart-pie me-2"></i> Borrows per Room (Pie Chart)
+                    </div>
+                    <div class="card-body">
+                        <canvas id="borrowsPieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Stats (with Teacher Analytics) -->
+        <div class="card border-primary mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-door-open"></i> Rooms (Form/Stream/Class)</h5>
+            </div>
+            <div class="card-body p-2">
+                <ul class="list-group list-group-flush">
+                    {% for room in room_stats %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold">{{ room.form }}</span>
+                                <span class="text-muted ms-2">{{ room.stream }}</span>
+                                <span class="badge bg-info ms-2">{{ room.class_teacher }}</span>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ room.student_count }}</span>
+                            <a href="{% url 'room_dashboard' room.id %}" class="btn btn-outline-info btn-sm ms-2">Dashboard</a>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-center text-muted">No rooms created.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-history"></i> Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_activity %}
+                    <ul class="list-group list-group-flush">
+                        {% for act in recent_activity %}
+                            <li class="list-group-item">
+                                <span class="fw-bold">{{ act.user }}</span>: {{ act.action }}
+                                <span class="float-end text-muted small">{{ act.timestamp|date:"M d, Y H:i" }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No recent activity yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Data from backend
+    const roomLabels = [{% for room in room_stats %}{% if not forloop.first %}, {% endif %}"{{ room.form|escapejs }} {{ room.stream|escapejs }}"{% endfor %}];
+    const studentCounts = [{% for room in room_stats %}{% if not forloop.first %}, {% endif %}{{ room.student_count|default:0 }}{% endfor %}];
+    const borrowsPerRoom = [{% for val in borrows_per_room %}{% if not forloop.first %}, {% endif %}{{ val }}{% endfor %}];
+
+    const chartColors = [
+        'rgba(13,110,253,0.6)', 'rgba(25,135,84,0.6)', 'rgba(255,193,7,0.6)', 'rgba(220,53,69,0.6)', 
+        'rgba(32,201,151,0.6)', 'rgba(111,66,193,0.6)', 'rgba(255,87,34,0.6)', 'rgba(0,123,255,0.6)',
+        'rgba(255,99,132,0.6)', 'rgba(54,162,235,0.6)', 'rgba(255,206,86,0.6)', 'rgba(75,192,192,0.6)'
+    ];
+
+    if (roomLabels.length && studentCounts.length) {
+        new Chart(document.getElementById("roomBarChart"), {
+            type: 'bar',
+            data: {
+                labels: roomLabels,
+                datasets: [{
+                    label: 'Number of Students',
+                    data: studentCounts,
+                    backgroundColor: chartColors,
+                    borderColor: chartColors.map(c => c.replace('0.6', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        new Chart(document.getElementById("roomLineChart"), {
+            type: 'line',
+            data: {
+                labels: roomLabels,
+                datasets: [{
+                    label: 'Number of Students',
+                    data: studentCounts,
+                    fill: false,
+                    borderColor: 'rgba(25,135,84,1)',
+                    backgroundColor: 'rgba(25,135,84,0.2)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    if (roomLabels.length && borrowsPerRoom.length) {
+        new Chart(document.getElementById("borrowsPieChart"), {
+            type: 'pie',
+            data: {
+                labels: roomLabels,
+                datasets: [{
+                    data: borrowsPerRoom,
+                    backgroundColor: chartColors,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: true, position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    // Students per stream chart
+    const streamLabels = [{% for stream in streams_list %}{% if not forloop.first %}, {% endif %}"{{ stream.stream }}"{% endfor %}];
+    const studentsPerStream = [{% for stream in streams_list %}{% if not forloop.first %}, {% endif %}{{ stream.total_students }}{% endfor %}];
+    const borrowsPerStream = [{% for stream in streams_list %}{% if not forloop.first %}, {% endif %}{{ stream.total_borrows }}{% endfor %}];
+
+    if (streamLabels.length && studentsPerStream.length) {
+        new Chart(document.getElementById("studentsStreamBarChart"), {
+            type: 'bar',
+            data: {
+                labels: streamLabels,
+                datasets: [
+                    {
+                        label: 'Students',
+                        data: studentsPerStream,
+                        backgroundColor: 'rgba(13,110,253,0.7)'
+                    },
+                    {
+                        label: 'Borrows',
+                        data: borrowsPerStream,
+                        backgroundColor: 'rgba(255,193,7,0.7)'
+                    }
+                ]
+            },
+            options: {
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+</script>
+{% endblock %}

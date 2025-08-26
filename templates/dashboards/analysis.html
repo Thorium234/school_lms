@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% block title %}Library Analysis{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Library Analysis &amp; Statistics</h2>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">
+            <i class="fas fa-home"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-4">
+            <div class="card border-0 shadow h-100 text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="fas fa-book fa-fw"></i> Total Books</h5>
+                    <p class="display-5 fw-bold">{{ total_books }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4">
+            <div class="card border-0 shadow h-100 text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-success"><i class="fas fa-users fa-fw"></i> Registered Students</h5>
+                    <p class="display-5 fw-bold">{{ total_students }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4">
+            <div class="card border-0 shadow h-100 text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-info"><i class="fas fa-layer-group"></i> Shelves</h5>
+                    <p class="display-5 fw-bold">{{ total_shelves }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="card border-0 shadow h-100 text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-warning"><i class="fas fa-door-open"></i> Rooms</h5>
+                    <p class="display-5 fw-bold">{{ total_rooms }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100 text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-danger"><i class="fas fa-exclamation-circle"></i> Overdue Books</h6>
+                    <p class="display-6 fw-bold">{{ overdue_books }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100 text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-warning"><i class="fas fa-clock"></i> Due in Next 7 Days</h6>
+                    <p class="display-6 fw-bold">{{ books_due_soon }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow h-100 text-center">
+                <div class="card-body">
+                    <h6 class="card-title text-success"><i class="fas fa-user-check"></i> Active Students</h6>
+                    <p class="display-6 fw-bold">{{ active_students }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Borrows per Room Chart -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white fw-bold">
+            <i class="fas fa-chart-bar"></i> Borrows Per Room
+        </div>
+        <div class="card-body">
+            <canvas id="borrowsPerRoomChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Top Borrowed Books -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white fw-bold">
+            <i class="fas fa-star"></i> Top 10 Borrowed Books
+        </div>
+        <div class="card-body">
+            {% if top_books %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Borrows</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for book in top_books %}
+                                <tr>
+                                    <td>{{ book.title }}</td>
+                                    <td>{{ book.borrow_count }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info text-center">
+                    No borrow data available.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Most Active Students -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-info text-white fw-bold">
+            <i class="fas fa-user-graduate"></i> Most Active Students
+        </div>
+        <div class="card-body">
+            {% if top_students %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Room</th>
+                                <th>Borrows</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in top_students %}
+                                <tr>
+                                    <td>{{ student.full_name }}</td>
+                                    <td>
+                                        {% if student.room %}
+                                            {{ student.room.form }} {{ student.room.stream }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ student.borrow_count }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info text-center">
+                    No student borrow data available.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Chart.js for Borrows Per Room
+    const borrowsPerRoomLabels = [{% for item in borrows_per_room %}{% if not forloop.first %}, {% endif %}"{{ item.label|escapejs }}"{% endfor %}];
+    const borrowsPerRoomCounts = [{% for item in borrows_per_room %}{% if not forloop.first %}, {% endif %}{{ item.count }}{% endfor %}];
+    const chartColors = [
+        'rgba(13,110,253,0.6)', 'rgba(25,135,84,0.6)', 'rgba(255,193,7,0.6)',
+        'rgba(220,53,69,0.6)', 'rgba(32,201,151,0.6)', 'rgba(111,66,193,0.6)',
+        'rgba(255,87,34,0.6)', 'rgba(0,123,255,0.6)', 'rgba(255,99,132,0.6)',
+        'rgba(54,162,235,0.6)', 'rgba(255,206,86,0.6)', 'rgba(75,192,192,0.6)'
+    ];
+
+    if (borrowsPerRoomLabels.length && borrowsPerRoomCounts.length) {
+        new Chart(document.getElementById("borrowsPerRoomChart"), {
+            type: 'bar',
+            data: {
+                labels: borrowsPerRoomLabels,
+                datasets: [{
+                    label: 'Borrows',
+                    data: borrowsPerRoomCounts,
+                    backgroundColor: chartColors,
+                    borderColor: chartColors.map(c => c.replace('0.6', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+</script>
+{% endblock %}

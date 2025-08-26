@@ -1,61 +1,44 @@
 {% extends 'base.html' %}
-
 {% block title %}Borrow Book{% endblock %}
-
 {% block content %}
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header bg-info text-white">
-            <h3>Borrow a Book</h3>
-        </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="form-group row">
-                    <label for="{{ form.student.id_for_label }}" class="col-sm-3 col-form-label">Student:</label>
-                    <div class="col-sm-9">
-                        {{ form.student }}
-                        <small class="form-text text-muted">Search by name or admission number</small>
-                        {% if form.student.errors %}
-                            <div class="alert alert-danger mt-2">{{ form.student.errors }}</div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-book"></i> Borrow a Book</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" autocomplete="off">
+                        {% csrf_token %}
+                        {{ form.media }}
+                        <div class="mb-3">
+                            {{ form.book.label_tag }} {{ form.book }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.admission_number.label_tag }} {{ form.admission_number }}
+                            <small class="text-muted">{{ form.admission_number.help_text }}</small>
+                        </div>
+                        <div class="mb-3">
+                            {{ form.days.label_tag }} {{ form.days }}
+                            <small class="text-muted">{{ form.days.help_text }}</small>
+                        </div>
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
                         {% endif %}
-                    </div>
+                        <div class="row mt-4">
+                            <div class="col-sm-9 offset-sm-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-book-reader"></i> Borrow Book
+                                </button>
+                                <a href="{% url 'borrow_list' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                
-                <div class="form-group row">
-                    <label for="{{ form.book.id_for_label }}" class="col-sm-3 col-form-label">Book:</label>
-                    <div class="col-sm-9">
-                        {{ form.book }}
-                        <small class="form-text text-muted">Only available books are shown</small>
-                        {% if form.book.errors %}
-                            <div class="alert alert-danger mt-2">{{ form.book.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="form-group row">
-                    <label for="{{ form.due_date.id_for_label }}" class="col-sm-3 col-form-label">Due Date:</label>
-                    <div class="col-sm-9">
-                        {{ form.due_date }}
-                        <small class="form-text text-muted">Default is 2 weeks from today</small>
-                        {% if form.due_date.errors %}
-                            <div class="alert alert-danger mt-2">{{ form.due_date.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="form-group row">
-                    <div class="col-sm-9 offset-sm-3">
-                        <button type="submit" class="btn btn-primary mr-2">
-                            <i class="fas fa-book"></i> Borrow Book
-                        </button>
-                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Cancel
-                        </a>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

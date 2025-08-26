@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Staff Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="fas fa-chalkboard-teacher"></i> Staff Dashboard</h2>
+            <a href="{% url 'profile_user' %}" class="btn btn-outline-primary">
+                <i class="fas fa-user"></i> View Profile
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Staff Info Card -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-id-badge"></i> Staff Info
+                </div>
+                <div class="card-body">
+                    <h4>{{ request.user.first_name }} {{ request.user.last_name }}</h4>
+                    <p><strong>Username:</strong> {{ request.user.username }}</p>
+                    <p><strong>Email:</strong> {{ request.user.email }}</p>
+                    <p><strong>Phone:</strong> {{ request.user.profile.phone|default:"-" }}</p>
+                    <p><strong>Role:</strong> {{ request.user.profile.get_role_display }}</p>
+                    <p><strong>Joined:</strong> {{ request.user.date_joined|date:"F d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Quick Actions & Summary -->
+        <div class="col-md-8 mb-3">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-bolt"></i> Quick Actions
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'profile_user' %}" class="btn btn-outline-primary mb-2">
+                        <i class="fas fa-user-edit"></i> Edit Profile
+                    </a>
+                    <a href="{% url 'password_change' %}" class="btn btn-outline-info mb-2">
+                        <i class="fas fa-key"></i> Change Password
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger mb-2">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+            <!-- Example: Staff Activity or Management Panel -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-tasks"></i> Management Panel
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'student_list' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-users"></i><br> View Students
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'book_list' %}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-book"></i><br> Manage Books
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'borrow_list' %}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-exchange-alt"></i><br> Manage Borrows
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'shelf_list' %}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-archive"></i><br> Manage Shelves
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'room_list' %}" class="btn btn-outline-dark w-100">
+                                <i class="fas fa-door-open"></i><br> Manage Rooms
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a href="{% url 'revision_papers_list' %}" class="btn btn-outline-info w-100">
+                                <i class="fas fa-file-alt"></i><br> Revision Papers
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notices or Tasks Section -->
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-info-circle"></i> Notices & Tasks
+                </div>
+                <div class="card-body">
+                    {% if staff_notices %}
+                        <ul>
+                            {% for notice in staff_notices %}
+                                <li><strong>{{ notice.title }}</strong>: {{ notice.content }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No new notices or tasks at the moment.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

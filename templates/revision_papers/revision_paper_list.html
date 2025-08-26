@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Revision Papers{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h2 class="mb-0">Revision Papers</h2>
+    <a href="{% url 'revision_paper_upload' %}" class="btn btn-success">
+      <i class="fas fa-upload"></i> Upload New Paper
+    </a>
+  </div>
+
+  {% if papers %}
+  <div class="row g-4">
+    {% for paper in papers %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title text-primary">
+            <i class="fas fa-file-alt me-1"></i>{{ paper.title }}
+          </h5>
+          <p class="card-text mb-1"><strong>Form:</strong> {{ paper.form }}</p>
+          <p class="card-text mb-1"><strong>Subject:</strong> {{ paper.subject }}</p>
+          <p class="card-text mb-1"><strong>Uploaded by:</strong> {{ paper.uploaded_by }}</p>
+          <p class="card-text text-muted small mt-auto"><i class="fas fa-clock me-1"></i>{{ paper.uploaded_at|date:"M d, Y" }}</p>
+          <a href="{{ paper.file.url }}" class="btn btn-outline-primary btn-sm mt-2" download>
+            <i class="fas fa-download"></i> Download
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center mt-4">
+    No revision papers uploaded.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

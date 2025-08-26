@@ -1,48 +1,53 @@
-{% extends 'base.html' %} 
-
-<p class="text-center mt-3">
-    {% if user.is_authenticated %}
-        <h2>Welcome {{ user.username }}</h2>
-    {% else %}
-        <h4>You must be logged in to access this page.</h4>
-    {% endif %}
-</p>
-
- 
+{% extends 'base.html' %}
+{% block title %}Book List{% endblock %}
 {% block content %}
-    {% if user.is_authenticated %}
-        <p class="text-center "> AddBook <a href="{% url 'student_create' %}" class="btn-success">here </a>
-        <i class="fa-solid fa-user-plus"></i> </a>
-    {% endif %} 
-    {% if book %}
-        <table class="table table-striped mt-4 table-bordered">
-            <thead>
-                <tr>
-                    <th>TITLE</th>
-                    <th>PUBLISHER</th>
-                    <th>FIRST PUBLISHED</th>
-                    <th>ISBN NUMBER</th>
-                    <th>CATEGORY</th>
-                    <th>ACTION</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for i in book %}
-                    <tr>
-                        <td>{{ i.title }}</td>
-                        <td>{{ i.publishers }}</td>
-                        <td>{{ i.first_publication }}</td>
-                        <td>{{ i.ISBN }}</td>
-                        <td>{{ i.category }}</td>
-                        <td>
-                            <a href="{% url 'Book_edit' i.id %}"  class="btn btn-success">Edit</a>
-                            <a href="{% url 'Book_delete' i.id %}" class="btn btn-warning">Delete</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <h4>there is no any book yet added</h4>
-    {% endif %}
+<div class="container mt-4">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold mb-3">Welcome, {{ user.username }}</h2>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+      <a href="{% url 'book_create' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Book</a>
+      <button class="btn btn-secondary" id="printBtn"><i class="fas fa-print"></i> Print List</button>
+    </div>
+  </div>
+
+  {% include 'includes/book_search_form.html' %}
+
+  {% if book %}
+  <div class="row g-3">
+    {% for book in book %}
+    <div class="col-sm-12 col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm">
+        {% if book.book_picture %}
+        <img src="{{ book.book_picture.url }}" class="card-img-top img-fluid" alt="{{ book.title }}">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ book.title }}</h5>
+          <p class="card-text small mb-1">Publisher: {{ book.publishers }}</p>
+          <p class="card-text small mb-1">Published: {{ book.first_publication }}</p>
+          <p class="card-text small mb-1">ISBN: {{ book.ISBN }}</p>
+          <p class="card-text small mb-1">Book No.: {{ book.book_number }}</p>
+          <p class="card-text small mb-1">Category: {{ book.category }}</p>
+          <p class="card-text small">Shelf: {{ book.shelf.shelf_name }}</p>
+          <div class="mt-auto">
+            <a href="{% url 'book_detail' book.pk %}" class="btn btn-info btn-sm me-1">View</a>
+            <a href="{% url 'book_edit' book.pk %}" class="btn btn-warning btn-sm me-1">Edit</a>
+            <a href="{% url 'book_delete' book.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete?')">Delete</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center shadow-sm">
+    There are no books yet added{% if request.GET.q %} or matching your search{% endif %}.
+  </div>
+  {% endif %}
+</div>
+<script>
+document.getElementById("printBtn").onclick = function(){
+  // same print logic...
+};
+</script>
 {% endblock %}
+

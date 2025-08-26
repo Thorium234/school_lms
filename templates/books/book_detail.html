@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Book Details{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Book Details</h2>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    {% if book.book_picture %}
+                        <img src="{{ book.book_picture.url }}" class="img-thumbnail" style="max-width:250px;" alt="Book Picture">
+                    {% else %}
+                        <span class="text-muted">No Picture</span>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <h4 class="card-title">{{ book.title }}</h4>
+                    <h6 class="card-subtitle mb-2 text-muted">Publisher: {{ book.publishers }}</h6>
+                    <p class="card-text"><strong>First Published:</strong> {{ book.first_publication }}</p>
+                    <p class="card-text"><strong>ISBN Number:</strong> {{ book.ISBN }}</p>
+                    <p class="card-text"><strong>Book Number:</strong> {{ book.book_number }}</p>
+                    <p class="card-text"><strong>Category:</strong> {{ book.category }}</p>
+                    <p class="card-text"><strong>Shelf Name:</strong> {{ book.shelf.shelf_name }}</p>
+                    <a href="{% url 'book_borrow_from_detail' book.pk %}" class="btn btn-success btn-sm">
+                        <i class="fas fa-book-reader"></i> Borrow This Book
+                    </a>
+                    <a href="{% url 'book_edit' book.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'book_delete' book.pk %}" class="btn btn-danger btn-sm"
+                       onclick="return confirm('Are you sure you want to delete this book?');">Delete</a>
+                    <a href="{% url 'book_list' %}" class="btn btn-secondary btn-sm">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

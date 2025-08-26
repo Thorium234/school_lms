@@ -1,0 +1,98 @@
+{% extends 'base_auth.html' %}
+{% block title %}Loading...{% endblock %}
+
+{% block content %}
+<!-- Fullscreen Transparent Overlay -->
+<div class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center backdrop-blur" style="z-index: 1050; background-color: rgba(0, 0, 0, 0.3);">
+    <div class="text-center px-3">
+        <!-- Typing title -->
+        <h2 id="typing-title" class="fw-bold mb-4 text-white" style="font-family: monospace; font-size: 1.8rem;"></h2>
+
+        <!-- Kenyan Flag Spinner -->
+        <div class="kenyan-spinner mx-auto mb-4" role="status" aria-label="Loading...">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <!-- Dynamic loading message -->
+        <h5 id="loading-msg" class="fw-semibold text-light mb-2 mt-4" style="letter-spacing: 1px;">Processing, please wait...</h5>
+        <p class="text-muted small" id="sub-message">We are processing your request. This will only take a moment.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Typing title
+const titleText = "Library Management System";
+let i = 0;
+function typeWriter() {
+    if (i < titleText.length) {
+        document.getElementById("typing-title").innerHTML += titleText.charAt(i);
+        i++;
+        setTimeout(typeWriter, 60);
+    }
+}
+typeWriter();
+
+// Loading messages cycling
+const loadingMessages = [
+    "Processing, please wait",
+    "Working on your request",
+    "Almost there",
+    "Finalizing, just a moment"
+];
+let msgIndex = 0, dotCount = 0;
+setInterval(() => {
+    msgIndex = (msgIndex + 1) % loadingMessages.length;
+    dotCount = (dotCount + 1) % 4;
+    document.getElementById("loading-msg").innerText = loadingMessages[msgIndex] + '.'.repeat(dotCount);
+}, 1300);
+
+// Random sub-message
+const subMessages = [
+    "We are processing your request. This will only take a moment.",
+    "Thank you for your patience.",
+    "Your action is being completed securely.",
+    "Bringing you the latest updates...",
+    "Thorium234 virtual library"
+];
+document.getElementById("sub-message").innerText = subMessages[Math.floor(Math.random() * subMessages.length)];
+
+// Optional redirect
+const redirectUrl = "{{ redirect_url|default:'' }}";
+if (redirectUrl) {
+    setTimeout(() => {
+        window.location.href = redirectUrl;
+    }, 3400);
+}
+</script>
+
+<style>
+/* Backdrop blur */
+.backdrop-blur {
+    backdrop-filter: blur(5px);
+}
+
+/* Spinner: Kenyan flag inspired colors */
+.kenyan-spinner {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 6px solid transparent;
+    border-top-color: red;     /* Red */
+    border-right-color: green; /* Green */
+    border-bottom-color: white;/* White */
+    border-left-color: black;  /* Black */
+    animation: spinFlag 1s linear infinite;
+    position: relative;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+}
+
+/* Pulse animation */
+@keyframes spinFlag {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg) scale(1.08); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}

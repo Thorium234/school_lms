@@ -1,0 +1,33 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}Staff Login{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height:100vh; background: linear-gradient(135deg, #f5f6fa 60%, #e3eafc 100%);">
+    <div class="card shadow p-4" style="min-width:350px; border-radius: 18px;">
+        <div class="text-center mb-3">
+            <img src="{% static 'img/logo.jpg' %}" alt="Staff" style="width:52px;height:52px;">
+            <h2 class="fw-bold mt-2" style="letter-spacing:1px;">Staff Login / Onboarding</h2>
+            <p class="text-muted mb-0">Enter your details to continue as staff.</p>
+        </div>
+        {% if error %}
+            <div class="alert alert-danger text-center py-2">{{ error }}</div>
+        {% endif %}
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.identifier.label_tag }}
+                {{ form.identifier|add_class:"form-control" }}
+                <small class="form-text text-muted">Username, email, or phone</small>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-semibold">
+                <i class="fas fa-sign-in-alt"></i> Continue
+            </button>
+        </form>
+        <div class="d-flex justify-content-between mt-3">
+            <a href="{% url 'find_account' %}" class="text-decoration-none">Forgot details?</a>
+            <a href="{% url 'select_role' %}" class="text-decoration-none"><i class="fas fa-angle-left"></i> Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
